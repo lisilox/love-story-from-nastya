@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <!-- Добавлен viewport с предотвращением зума для идеального отображения на мобильных -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Для моей любимой Насти ❤️</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        /* Простой, красивый и отлично читаемый системный шрифт */
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
+            margin: 0;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* Анимация падающих сердечек */
+        .hearts-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .heart {
+            position: absolute;
+            bottom: -50px;
+            color: rgba(255, 77, 109, 0.6);
+            animation: float 6s linear infinite;
+        }
+        @keyframes float {
+            0% { transform: translateY(0) scale(1) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-120vh) scale(1.5) rotate(45deg); opacity: 0; }
+        }
+        
+        /* Классы для плавной анимации появления вопросов */
+        .fade-enter { opacity: 0; transform: translateY(15px); }
+        .fade-enter-active {
+            opacity: 1; transform: translateY(0);
+            transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+        }
+        .fade-exit { opacity: 1; transform: translateY(0); }
+        .fade-exit-active {
+            opacity: 0; transform: translateY(-15px);
+            transition: opacity 0.3s ease-in, transform 0.3s ease-in;
+        }
+
+        /* Адаптивная карточка (Glassmorphism) */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 20px 40px -10px rgba(255, 100, 150, 0.25);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4 sm:p-6">
+    
+    <div class="hearts-bg" id="hearts-container"></div>
+
+    <div class="glass-card w-full max-w-[95%] sm:max-w-md rounded-[2rem] p-6 sm:p-10 relative z-10 overflow-hidden text-center min-h-[350px] flex flex-col justify-center items-center transition-all duration-300" id="card-container">
+        
+        <div id="content-area" class="w-full">
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-rose-500 mb-4 sm:mb-6 drop-shadow-sm">Привет, красавица!</h1>
+            <p class="text-base sm:text-lg text-gray-700 mb-6 sm:mb-8 font-medium leading-relaxed">
+                У меня для тебя есть небольшой, но очень важный опрос. Готова?
+            </p>
+            <button onclick="startQuiz()" class="w-full sm:w-auto bg-gradient-to-r from-rose-400 to-rose-500 hover:from-rose-500 hover:to-rose-600 text-white font-bold text-lg py-4 sm:py-3 px-10 rounded-2xl sm:rounded-full shadow-lg hover:shadow-rose-300/50 transition-all transform hover:-translate-y-1 active:translate-y-0 active:scale-95 duration-200">
+                Начать опрос
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        // Создаем фоновые сердечки
+        const emojis = ['❤️', '💖', '💕', '✨'];
+        function createHearts() {
+            const container = document.getElementById('hearts-container');
+            for(let i=0; i<15; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
+                    heart.classList.add('heart');
+                    heart.style.left = Math.random() * 100 + 'vw';
+                    heart.style.animationDuration = (Math.random() * 4 + 4) + 's';
+                    heart.style.fontSize = (Math.random() * 12 + 16) + 'px';
+                    container.appendChild(heart);
+                    
+                    setInterval(() => {
+                        heart.style.left = Math.random() * 100 + 'vw';
+                        heart.style.animationDuration = (Math.random() * 4 + 4) + 's';
+                    }, (Math.random() * 4 + 4) * 1000);
+                }, i * 350);
+            }
+        }
+        createHearts();
+
+        // 15 вопросов: 5 старых + 10 новых в той же тематике
+        const questions = [
+            "Тебя зовут Настя?",
+            "Твоего парня зовут Саша?",
+            "Ты самая прекрасная девушка на свете?",
+            "Твоя улыбка делает Сашу самым счастливым?",
+            "Ты очень сильно любишь Сашу?",
+            "Саша лучший парень на планете?",
+            "Вы с Сашей идеальная пара?",
+            "Ты скучаешь по нему, когда его нет рядом?",
+            "Твои объятия самые теплые на свете?",
+            "Рядом с Сашей ты чувствуешь себя в безопасности?",
+            "Ты готова проводить с ним каждый день?",
+            "Саша всегда может заставить тебя улыбнуться?",
+            "Тебе нравится держать его за руку?",
+            "У вас впереди еще много счастливых моментов?",
+            "Вы будете вместе всегда-всегда?"
+        ];
+        
+        let currentQuestion = 0;
+        const contentArea = document.getElementById('content-area');
+
+        // Плавная замена контента
+        function animateTransition(newHTML) {
+            contentArea.classList.add('fade-exit-active');
+            
+            setTimeout(() => {
+                contentArea.innerHTML = newHTML;
+                contentArea.classList.remove('fade-exit-active');
+                contentArea.classList.add('fade-enter');
+                
+                void contentArea.offsetWidth; // Принудительный рендер для анимации
+                
+                contentArea.classList.remove('fade-enter');
+                contentArea.classList.add('fade-enter-active');
+                
+                setTimeout(() => {
+                    contentArea.classList.remove('fade-enter-active');
+                }, 400);
+            }, 300);
+        }
+
+        function startQuiz() {
+            currentQuestion = 0;
+            showQuestion();
+        }
+
+        function showQuestion() {
+            if (currentQuestion >= questions.length) {
+                showFinal();
+                return;
+            }
+
+            const qText = questions[currentQuestion];
+            const html = `
+                <div class="space-y-4 sm:space-y-6 flex flex-col items-center">
+                    <div class="bg-rose-100 text-rose-500 text-[10px] sm:text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-widest mb-1">
+                        Вопрос ${currentQuestion + 1} из ${questions.length}
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 leading-tight py-4 drop-shadow-sm min-h-[100px] flex items-center justify-center w-full px-2">
+                        ${qText}
+                    </h2>
+                    <div class="flex flex-row w-full justify-center gap-3 sm:gap-4 mt-2">
+                        <button onclick="handleAnswer(true)" class="flex-1 bg-gradient-to-br from-green-400 to-green-500 hover:from-green-500 hover:to-green-600 text-white font-bold text-lg sm:text-xl py-4 sm:py-5 px-4 rounded-2xl shadow-lg hover:shadow-green-300/50 transition-all transform hover:-translate-y-1 active:scale-95 duration-200">
+                            Да
+                        </button>
+                        <button onclick="handleAnswer(false)" class="flex-1 bg-gradient-to-br from-rose-400 to-rose-500 hover:from-rose-500 hover:to-rose-600 text-white font-bold text-lg sm:text-xl py-4 sm:py-5 px-4 rounded-2xl shadow-lg hover:shadow-rose-300/50 transition-all transform hover:-translate-y-1 active:scale-95 duration-200">
+                            Нет
+                        </button>
+                    </div>
+                </div>
+            `;
+            animateTransition(html);
+        }
+
+        function handleAnswer(isYes) {
+            if (isYes) {
+                currentQuestion++;
+                showQuestion();
+            } else {
+                showError();
+            }
+        }
+
+        function showError() {
+            const html = `
+                <div class="space-y-4 sm:space-y-6 flex flex-col items-center px-2">
+                    <div class="text-6xl sm:text-7xl mb-2 animate-pulse">🥺</div>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-rose-600 tracking-wide">Неправильный ответ!</h2>
+                    <p class="text-gray-700 text-base sm:text-lg mb-4 sm:mb-6 leading-relaxed font-medium">
+                        Саша очень расстроен... Подумай еще раз и давай попробуем заново!
+                    </p>
+                    <button onclick="startQuiz()" class="w-full bg-gradient-to-r from-gray-700 to-gray-800 hover:from-gray-800 hover:to-gray-900 text-white font-bold text-lg py-4 px-6 rounded-2xl shadow-lg hover:shadow-gray-400/50 transition-all transform hover:-translate-y-1 active:scale-95 duration-200">
+                        Начать заново ↺
+                    </button>
+                </div>
+            `;
+            animateTransition(html);
+        }
+
+        function showFinal() {
+            // Взрыв сердечек в финале
+            const finalEmojis = ['❤️', '💖', '💘', '💝', '✨'];
+            for(let i=0; i<30; i++) {
+                const heart = document.createElement('div');
+                heart.innerHTML = finalEmojis[Math.floor(Math.random() * finalEmojis.length)];
+                heart.classList.add('heart');
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                heart.style.fontSize = (Math.random() * 25 + 20) + 'px';
+                document.getElementById('hearts-container').appendChild(heart);
+            }
+
+            const html = `
+                <div class="space-y-4 sm:space-y-6 py-4 sm:py-6 flex flex-col items-center px-2">
+                    <div class="text-6xl sm:text-7xl mb-2 animate-bounce">💍</div>
+                    <h1 class="text-2xl sm:text-4xl font-extrabold text-rose-500 leading-tight drop-shadow-md">
+                        Я тоже тебя безумно люблю, Настя! ❤️
+                    </h1>
+                    <p class="text-base sm:text-lg text-gray-800 font-semibold mt-4 leading-relaxed bg-rose-50 px-4 sm:px-6 py-4 rounded-2xl border border-rose-100 shadow-inner w-full text-left sm:text-center">
+                        Спасибо тебе большое, за то что ты радуешь меня своей красотой и 24 мая ты не испугалась мне признаться в своих чувствах, я тебя очень ценю!
+                        <br><br>
+                        <span class="text-rose-500 font-bold block text-right sm:inline">Твой Саша</span>
+                    </p>
+                </div>
+            `;
+            animateTransition(html);
+        }
+    </script>
+</body>
+</html>
