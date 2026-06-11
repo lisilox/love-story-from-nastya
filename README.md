@@ -1,2 +1,0 @@
-# love-story-
-from Nastya
